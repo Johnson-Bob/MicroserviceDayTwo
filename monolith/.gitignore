@@ -3,9 +3,9 @@
 *.project
 *.txt
 *.lst
-*.xml
 *.iml
 .settings
+.idea
 target
 *.springBeans
 pom.properties
