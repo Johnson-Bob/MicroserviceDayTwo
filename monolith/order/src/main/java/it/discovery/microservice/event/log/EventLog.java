@@ -1,5 +1,6 @@
 package it.discovery.microservice.event.log;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -8,13 +9,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import it.discovery.microservice.event.BaseEvent;
 import lombok.Setter;
 
 @Table(name = "EVENT_LOG")
 @Entity
 @Setter
 public class EventLog {
+	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	private int id;
 
@@ -48,5 +54,15 @@ public class EventLog {
 	@Column(name = "EVENT_CLASS", nullable = false)
 	public String getEventClass() {
 		return eventClass;
+	}
+	
+	@Transient
+	public BaseEvent getEvent() {
+		try {
+			return (BaseEvent) MAPPER.readValue(source, 
+					Class.forName(eventClass));
+		} catch (ClassNotFoundException | IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

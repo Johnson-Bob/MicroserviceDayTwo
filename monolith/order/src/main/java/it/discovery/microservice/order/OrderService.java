@@ -1,8 +1,8 @@
 package it.discovery.microservice.order;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,9 @@ import it.discovery.microservice.event.OrderDeliveredEvent;
 import it.discovery.microservice.event.PaymentSuccessEvent;
 import it.discovery.microservice.event.bus.EventBus;
 import it.discovery.microservice.event.bus.Listener;
+import it.discovery.microservice.event.log.EventLog;
 import it.discovery.microservice.event.log.EventLogRepository;
+import it.discovery.microservice.order.commands.CreateOrderCommand;
 
 @Service
 public class OrderService implements Listener {
@@ -27,12 +29,10 @@ public class OrderService implements Listener {
 	private CustomerRepository customerRepository;
 
 	private EventBus eventBus;
-	
+
 	private EventLogRepository eventLogRepository;
 
-	public OrderService(OrderRepository orderRepository, 
-			EventBus eventBus,
-			CustomerRepository customerRepository,
+	public OrderService(OrderRepository orderRepository, EventBus eventBus, CustomerRepository customerRepository,
 			EventLogRepository eventLogRepository) {
 		this.orderRepository = orderRepository;
 		this.eventBus = eventBus;
@@ -58,12 +58,12 @@ public class OrderService implements Listener {
 		}
 	}
 
-	public Order createOrder(int bookId, double price, int number, int customerId) {
+	public Order createOrder(CreateOrderCommand cmd) {
 		Order order = new Order();
-		order.addItem(new OrderItem(bookId, price, number));
-		order.setOrderDate(LocalDateTime.now());
-		order.setCustomer(customerRepository.findById(customerId));
-		orderRepository.save(order);
+		List<BaseEvent> events = order.process(cmd);
+		order.setCustomer(customerRepository.
+				findById(cmd.getCustomerId()));
+		//eventLogRepository.saveAll(events);
 
 		return order;
 	}
@@ -98,18 +98,13 @@ public class OrderService implements Listener {
 		order.setDeliveryDate(event.getDeliveryDate());
 		orderRepository.save(order);
 	}
-	
+
 	public Order findOrder(int orderId) {
 		Order order = new Order();
-		Stream.of(1,2).map(i -> i);
-//		eventLogRepository.findEventLogByEntityId(orderId)
-//				.map(eventLog -> 
-//				MAPPER.readValue(eventLog.getSource(), 
-//					Class.forName(eventLog.getClass())));
-//		
+		eventLogRepository.findEventLogByEntityId(orderId)
+		.map(EventLog::getEvent);
+
 		return null;
-				
-				
 	}
 
 	@Override
