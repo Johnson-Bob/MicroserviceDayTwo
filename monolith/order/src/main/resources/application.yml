@@ -3,3 +3,8 @@ spring:
     consumer:
       auto-offset-reset: earliest
       group-id: app
+  data:
+    mongodb:
+      database: logs
+
+      

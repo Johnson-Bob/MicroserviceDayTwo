@@ -2,10 +2,10 @@ package it.discovery.microservice.event.log;
 
 import java.util.stream.Stream;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface EventLogRepository extends 
-JpaRepository<EventLog, Integer> {
+MongoRepository<EventLog, Integer> {
 	Stream<EventLog> findByEntityId(int entityId);
 
 }

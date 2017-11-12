@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.PrePersist;
-import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,12 +18,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.discovery.microservice.event.BaseEvent;
 import lombok.Setter;
 
-@Table(name = "EVENT_LOG")
-@Entity
+//@Table(name = "EVENT_LOG")
+//@Entity
 @Setter
+@Document
 public class EventLog {
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
+	@Id
 	private int id;
 
 	private LocalDateTime created;
@@ -34,8 +36,8 @@ public class EventLog {
 
 	private String source;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.AUTO)
 	public int getId() {
 		return id;
 	}
@@ -44,7 +46,7 @@ public class EventLog {
 		return created;
 	}
 
-	@Column(name = "EVENT_SOURCE", updatable = false, nullable = false)
+	//@Column(name = "EVENT_SOURCE", updatable = false, nullable = false)
 	public String getSource() {
 		return source;
 	}
@@ -53,7 +55,7 @@ public class EventLog {
 		return entityId;
 	}
 
-	@Column(name = "EVENT_CLASS", nullable = false)
+	//@Column(name = "EVENT_CLASS", nullable = false)
 	public String getEventClass() {
 		return eventClass;
 	}
