@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import it.discovery.microservice.event.BaseEvent;
 
-@Component
+//@Component
 public class SpringEventBus implements EventBus {
 
 	private final ApplicationEventPublisher publisher;

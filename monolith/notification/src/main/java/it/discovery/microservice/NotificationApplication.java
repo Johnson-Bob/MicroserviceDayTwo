@@ -6,10 +6,10 @@ import org.springframework.kafka.annotation.EnableKafka;
 
 @SpringBootApplication
 @EnableKafka
-public class OrderApplication {
+public class NotificationApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(OrderApplication.class, args);
+		SpringApplication.run(NotificationApplication.class, args);
 	}
 
 }
