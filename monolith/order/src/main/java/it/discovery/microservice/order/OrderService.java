@@ -1,13 +1,11 @@
 package it.discovery.microservice.order;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.discovery.microservice.customer.CustomerRepository;
 import it.discovery.microservice.event.BaseEvent;
@@ -22,8 +20,6 @@ import it.discovery.microservice.order.commands.CreateOrderCommand;
 
 @Service
 public class OrderService implements Listener {
-	private static final ObjectMapper MAPPER = new ObjectMapper();
-
 	private final OrderRepository orderRepository;
 
 	private CustomerRepository customerRepository;
@@ -31,6 +27,9 @@ public class OrderService implements Listener {
 	private EventBus eventBus;
 
 	private EventLogRepository eventLogRepository;
+
+	@Autowired
+	private RedisTemplate<String, String> redisTemplate;
 
 	public OrderService(OrderRepository orderRepository, EventBus eventBus, CustomerRepository customerRepository,
 			EventLogRepository eventLogRepository) {
@@ -59,11 +58,11 @@ public class OrderService implements Listener {
 	}
 
 	public Order createOrder(CreateOrderCommand cmd) {
+		redisTemplate.boundValueOps("operations").set("1");
 		Order order = new Order();
 		List<BaseEvent> events = order.process(cmd);
-		order.setCustomer(customerRepository.
-				findById(cmd.getCustomerId()));
-		//eventLogRepository.saveAll(events);
+		order.setCustomer(customerRepository.findById(cmd.getCustomerId()));
+		// eventLogRepository.saveAll(events);
 
 		return order;
 	}
@@ -101,8 +100,7 @@ public class OrderService implements Listener {
 
 	public Order findOrder(int orderId) {
 		Order order = new Order();
-		eventLogRepository.findEventLogByEntityId(orderId)
-		.map(EventLog::getEvent);
+		eventLogRepository.findByEntityId(orderId).map(EventLog::getEvent);
 
 		return null;
 	}

@@ -23,9 +23,7 @@ public class OrderController {
 	
 	@PostMapping
 	public int createOrder(@RequestBody CreateOrderCommand request) {
-		return orderService.createOrder(request.getBookId(), 
-				request.getPrice(), request.getNumber(),
-				request.getCustomerId()).getId();		
+		return orderService.createOrder(request).getId();		
 	}
 	
 	public void addBook(int orderId, int bookId, double price, int number) {
