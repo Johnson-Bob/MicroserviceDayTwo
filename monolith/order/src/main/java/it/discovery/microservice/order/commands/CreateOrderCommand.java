@@ -1,9 +1,9 @@
-package it.discovery.microservice.dto;
+package it.discovery.microservice.order.commands;
 
 import lombok.Data;
 
 @Data
-public class CreateOrderRequest {
+public class CreateOrderCommand {
 	private int bookId;
 	
 	private int number;
@@ -11,5 +11,4 @@ public class CreateOrderRequest {
 	private int customerId;
 	
 	private double price;
-
 }

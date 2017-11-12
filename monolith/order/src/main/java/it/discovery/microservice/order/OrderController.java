@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import it.discovery.microservice.dto.CreateOrderRequest;
+import it.discovery.microservice.order.commands.CreateOrderCommand;
 
 @RestController
 @RequestMapping("/order")
@@ -22,10 +22,10 @@ public class OrderController {
 	}
 	
 	@PostMapping
-	public int createOrder(@RequestBody CreateOrderRequest request) {
+	public int createOrder(@RequestBody CreateOrderCommand request) {
 		return orderService.createOrder(request.getBookId(), 
 				request.getPrice(), request.getNumber(),
-				request.getNumber()).getId();		
+				request.getCustomerId()).getId();		
 	}
 	
 	public void addBook(int orderId, int bookId, double price, int number) {
