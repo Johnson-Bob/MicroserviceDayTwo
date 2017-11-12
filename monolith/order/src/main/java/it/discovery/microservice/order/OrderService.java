@@ -1,6 +1,7 @@
 package it.discovery.microservice.order;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -29,7 +30,7 @@ public class OrderService implements Listener {
 	private EventLogRepository eventLogRepository;
 
 	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
+	private RedisTemplate<Integer, Object> redisTemplate;
 
 	public OrderService(OrderRepository orderRepository, EventBus eventBus, CustomerRepository customerRepository,
 			EventLogRepository eventLogRepository) {
@@ -58,11 +59,11 @@ public class OrderService implements Listener {
 	}
 
 	public Order createOrder(CreateOrderCommand cmd) {
-		redisTemplate.boundValueOps("operations").set("1");
 		Order order = new Order();
-		List<BaseEvent> events = order.process(cmd);
 		order.setCustomer(customerRepository.findById(cmd.getCustomerId()));
-		// eventLogRepository.saveAll(events);
+		eventLogRepository.saveAll(order.process(cmd)
+				.stream().map(EventLog::fromEvent)
+				.collect(Collectors.toList()));
 
 		return order;
 	}
@@ -102,7 +103,8 @@ public class OrderService implements Listener {
 		Order order = new Order();
 		eventLogRepository.findByEntityId(orderId).map(EventLog::getEvent);
 
-		return null;
+		Object val =  redisTemplate.boundValueOps(orderId).get();
+		return (Order) val;
 	}
 
 	@Override

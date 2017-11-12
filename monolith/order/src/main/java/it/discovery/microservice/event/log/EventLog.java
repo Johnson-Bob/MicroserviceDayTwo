@@ -8,9 +8,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.discovery.microservice.event.BaseEvent;
@@ -55,14 +57,29 @@ public class EventLog {
 	public String getEventClass() {
 		return eventClass;
 	}
-	
+
 	@Transient
 	public BaseEvent getEvent() {
 		try {
-			return (BaseEvent) MAPPER.readValue(source, 
-					Class.forName(eventClass));
+			return (BaseEvent) MAPPER.readValue(source, Class.forName(eventClass));
 		} catch (ClassNotFoundException | IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static EventLog fromEvent(BaseEvent event) {
+		EventLog log = new EventLog();
+		log.setEventClass(event.getClass().getName());
+		try {
+			log.setSource(MAPPER.writeValueAsString(event));
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+		return log;
+	}
+	
+	@PrePersist
+	public void preSave() {
+		created = LocalDateTime.now();
 	}
 }
