@@ -23,9 +23,12 @@ public class OrderService implements Listener {
 
 	private EventBus eventBus;
 
-	public OrderService(OrderRepository orderRepository, EventBus eventBus) {
+	public OrderService(OrderRepository orderRepository, 
+			EventBus eventBus,
+			CustomerRepository customerRepository) {
 		this.orderRepository = orderRepository;
 		this.eventBus = eventBus;
+		this.customerRepository = customerRepository;
 		eventBus.subscribe(this);
 	}
 
@@ -51,6 +54,7 @@ public class OrderService implements Listener {
 		order.addItem(new OrderItem(bookId, price, number));
 		order.setOrderDate(LocalDateTime.now());
 		order.setCustomer(customerRepository.findById(customerId));
+		orderRepository.save(order);
 
 		return order;
 	}
