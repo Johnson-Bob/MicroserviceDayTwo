@@ -128,4 +128,13 @@
 	</pluginRepositories>
 
 
+	<packaging>pom</packaging>
+	<modules>
+		<module>notification</module>
+		<module>common</module>
+		<module>order</module>
+		<module>delivery</module>
+		<module>payment</module>
+		<module>book</module>
+	</modules>
 </project>

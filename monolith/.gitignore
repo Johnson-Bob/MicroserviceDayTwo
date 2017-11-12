@@ -8,3 +8,4 @@
 .settings
 target
 *.springBeans
+pom.properties
