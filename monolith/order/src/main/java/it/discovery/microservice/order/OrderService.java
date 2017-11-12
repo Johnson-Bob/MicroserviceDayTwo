@@ -2,9 +2,12 @@ package it.discovery.microservice.order;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.discovery.microservice.customer.CustomerRepository;
 import it.discovery.microservice.event.BaseEvent;
@@ -13,22 +16,28 @@ import it.discovery.microservice.event.OrderDeliveredEvent;
 import it.discovery.microservice.event.PaymentSuccessEvent;
 import it.discovery.microservice.event.bus.EventBus;
 import it.discovery.microservice.event.bus.Listener;
+import it.discovery.microservice.event.log.EventLogRepository;
 
 @Service
 public class OrderService implements Listener {
+	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	private final OrderRepository orderRepository;
 
 	private CustomerRepository customerRepository;
 
 	private EventBus eventBus;
+	
+	private EventLogRepository eventLogRepository;
 
 	public OrderService(OrderRepository orderRepository, 
 			EventBus eventBus,
-			CustomerRepository customerRepository) {
+			CustomerRepository customerRepository,
+			EventLogRepository eventLogRepository) {
 		this.orderRepository = orderRepository;
 		this.eventBus = eventBus;
 		this.customerRepository = customerRepository;
+		this.eventLogRepository = eventLogRepository;
 		eventBus.subscribe(this);
 	}
 
@@ -88,6 +97,19 @@ public class OrderService implements Listener {
 		order.setDelivered(true);
 		order.setDeliveryDate(event.getDeliveryDate());
 		orderRepository.save(order);
+	}
+	
+	public Order findOrder(int orderId) {
+		Order order = new Order();
+		Stream.of(1,2).map(i -> i);
+//		eventLogRepository.findEventLogByEntityId(orderId)
+//				.map(eventLog -> 
+//				MAPPER.readValue(eventLog.getSource(), 
+//					Class.forName(eventLog.getClass())));
+//		
+		return null;
+				
+				
 	}
 
 	@Override
